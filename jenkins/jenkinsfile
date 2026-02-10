@@ -9,6 +9,10 @@ pipeline {
                     reuseNode true
                 }
             }
+            environment {
+                GOCACHE = "/tmp/go-build"
+                HOME = "/tmp"
+            }
             steps {
                 dir ('bugtracker-backend'){
                     sh 'go test -v ./...'
