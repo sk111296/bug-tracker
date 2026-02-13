@@ -1,6 +1,19 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_HOST = "tcp://host.docker.internal:2375"
+    }
+    stages {
+
+        stage('Test Docker Connection') {
+            steps {
+                sh '''
+                    docker ps
+                '''
+            }
+        }
+
     stages {
         stage('Unit Tests - Backend') {
             agent {
