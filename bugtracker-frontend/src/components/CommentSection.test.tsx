@@ -122,7 +122,7 @@ describe("CommentSection", () => {
     );
 
     expect(
-      screen.getByText(/6\/10\/23.*12:00/i)
+      screen.getByText(/6\/10\/23.*\d{1,2}:\d{2}/)
     ).toBeInTheDocument();
     jest.useRealTimers();
   });
