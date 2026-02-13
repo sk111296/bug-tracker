@@ -14,7 +14,7 @@ pipeline {
             }
         }
 
-    stages {
+    stage{
         stage('Unit Tests - Backend') {
             agent {
                 docker {
