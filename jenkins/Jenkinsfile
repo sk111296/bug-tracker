@@ -30,8 +30,13 @@ pipeline {
                 dir('bugtracker-backend') {
                     sh '''
                         mkdir -p $GOPATH $GOCACHE $GOMODCACHE
-                        go test -v ./...
+                        go test -v ./... 2>&1 | go-junit-report > test-result.xml
                     '''
+                }
+            }
+            post{
+                always{
+                    junit 'bugtracker-backend/test-results.xml'
                 }
             }
         }
