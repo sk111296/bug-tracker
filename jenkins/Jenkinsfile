@@ -24,7 +24,13 @@ pipeline {
             }
             steps {
                 dir('bugtracker-backend') {
-                    sh 'go test -v ./... 2>&1 | go-junit-report > test-results.xml'
+                    sh '''
+                        echo "Running tests in container..."
+                        pwd
+                        ls -la
+                        go test -v ./... | go-junit-report > test-results.xml
+                        cat test-results.xml
+                    '''
                 }
             }
             post {
@@ -33,7 +39,6 @@ pipeline {
                 }
             }
         }
-
         stage('Unit Tests - Frontend') {
             agent {
                 docker {
