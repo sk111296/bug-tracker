@@ -14,32 +14,25 @@ pipeline {
             }
         }
         stage('Unit Tests - Backend') {
-            agent {
-                docker {
-                    image 'snakee/golang-junit:1.21'
-                    reuseNode true
-                }
-            }
-            environment {
-                HOME = "/tmp"
-                GOPATH = "/tmp/go"
-                GOCACHE = "/tmp/go-build"
-                GOMODCACHE = "/tmp/go/pkg/mod"
-            }
-            steps {
+    steps {
+        script {
+            docker.image('snakee/golang-junit:1.21').inside {
                 dir('bugtracker-backend') {
                     sh '''
-                        mkdir -p $GOPATH $GOCACHE $GOMODCACHE
+                        mkdir -p /tmp/go /tmp/go-build /tmp/go/pkg/mod
                         go test -v ./... 2>&1 | go-junit-report > report.xml
                     '''
                 }
             }
-            post{
-                always{
-                    junit 'bugtracker-backend/test-results.xml'
-                }
-            }
         }
+    }
+    post {
+        always {
+            junit 'bugtracker-backend/report.xml'
+        }
+    }
+}
+
 
         stage("Unit Tests - Frontend"){
             agent{
