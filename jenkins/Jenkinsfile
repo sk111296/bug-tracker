@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_HOST = "tcp://host.docker.internal:2375"
     }
+
     stages {
 
         stage('Test Docker Connection') {
@@ -13,47 +14,47 @@ pipeline {
                 '''
             }
         }
+
         stage('Unit Tests - Backend') {
-    steps {
-        script {
-            docker.image('snakee/golang-junit:1.21').inside {
-                dir('bugtracker-backend') {
-                    sh '''
-                        mkdir -p /tmp/go /tmp/go-build /tmp/go/pkg/mod
-                        
-                    '''
-                }
-            }
-        }
-    }
-    post {
-        always {
-            junit 'bugtracker-backend/report.xml'
-        }
-    }
-}
-
-
-        stage("Unit Tests - Frontend"){
-            agent{
-                docker{
-                    image 'node:20-alpine' 
+            agent {
+                docker {
+                    image 'snakee/golang-junit:1.21'
                     reuseNode true
                 }
             }
-            steps{
-                dir('bugtracker-frontend'){
-                   sh '''
-                      npm ci
-                      npm test 
+            steps {
+                dir('bugtracker-backend') {
+                    sh 'go test -v ./... 2>&1 | go-junit-report > test-results.xml'
+                }
+            }
+            post {
+                always {
+                    junit 'bugtracker-backend/test-results.xml'
+                }
+            }
+        }
+
+        stage('Unit Tests - Frontend') {
+            agent {
+                docker {
+                    image 'node:20-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('bugtracker-frontend') {
+                    sh '''
+                        npm ci
+                        npm test
                     '''
                 }
             }
-            post{
-                always{
+            post {
+                always {
                     junit 'bugtracker-frontend/test-results.xml'
                 }
             }
         }
+
     }
 }
