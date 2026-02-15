@@ -37,7 +37,7 @@ pipeline {
 
                         # Generate coverage report
                         go test -coverprofile=coverage.out -covermode=atomic ./...
-                        go toll cover -html=coverage.out -o coverage.html
+                        go tool cover -html=coverage.out -o coverage.html
 
                         mkdir -p reports
                         mv coverage.html reports/
@@ -47,11 +47,11 @@ pipeline {
             post {
                 always {
                     junit 'bugtracker-backend/test-results.xml'
-                    publishHTML target: [
+                    publishHTML(target: [
                         reportDIr: 'bugtracker-backend/reports',
                         reportFiles: 'coverage.html',
                         reportName: 'Backend Coverage Report'
-                    ]
+                    ])
                 }
             }
         }
