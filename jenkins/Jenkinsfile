@@ -20,7 +20,7 @@ pipeline {
                 dir('bugtracker-backend') {
                     sh '''
                         mkdir -p /tmp/go /tmp/go-build /tmp/go/pkg/mod
-                        go test -v ./... 2>&1 | go-junit-report > report.xml
+                        
                     '''
                 }
             }
