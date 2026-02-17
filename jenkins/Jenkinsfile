@@ -1,14 +1,8 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKER_HOST = "tcp://host.docker.internal:2375"
-    }
-
     stages {
         stage('Execute Unit Tests') {
             parallel {
-
                 stage('Test Docker Connection') {
                     steps {
                         sh '''
@@ -16,7 +10,6 @@ pipeline {
                         '''
                     }
                 }
-
                 stage('Unit Tests - Backend') {
                     agent {
                         docker {
@@ -24,12 +17,10 @@ pipeline {
                             reuseNode true
                         }
                     }
-
                     environment {
                         GOCACHE = "${WORKSPACE}/.gocache"
                         GOPATH  = "${WORKSPACE}/.gopath"
                     }
-
                     steps {
                         dir('bugtracker-backend') {
                             sh '''
@@ -48,7 +39,6 @@ pipeline {
                             '''
                         }
                     }
-
                     post {
                         always {
                             junit 'bugtracker-backend/test-results.xml'
@@ -60,7 +50,6 @@ pipeline {
                         }
                     }
                 }
-
                 stage('Unit Tests - Frontend') {
                     agent {
                         docker {
@@ -68,7 +57,6 @@ pipeline {
                             reuseNode true
                         }
                     }
-
                     steps {
                         dir('bugtracker-frontend') {
                             sh '''
@@ -81,7 +69,6 @@ pipeline {
                             '''
                         }
                     }
-
                     post {
                         always {
                             junit 'bugtracker-frontend/test-results.xml'
@@ -97,18 +84,17 @@ pipeline {
             }
         }
         stage("Launch Applicaton"){
-            agent{
-                docker{
+            agent {
+                docker {
                     image "docker:27.5.1"
                     reuseNode true
-                    args "-v /var/run/docker.sock:var/run/docker.sock -u 0"
+                    args "-v /var/run/docker.sock:/var/run/docker.sock -u 0"
                 }
             }
-            steps{
+            steps {
                 sh 'docker compose up --build -d'
             }
         }
-
     }
     post {
         always {
