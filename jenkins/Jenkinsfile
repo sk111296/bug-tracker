@@ -96,8 +96,8 @@ pipeline {
             }
         }
         stage("API Tests"){
-            agent{
-                docker{
+            agent {
+                docker {
                     image 'mcr.microsoft.com/playright:v1.50.0-jammy'
                     reuseNode trueargs '-u 0 --network=host'
                 }
