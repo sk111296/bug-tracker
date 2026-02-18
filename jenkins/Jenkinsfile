@@ -95,6 +95,22 @@ pipeline {
                 sh 'docker compose up --build -d'
             }
         }
+        stage("API Tests"){
+            agent{
+                docker{
+                    image 'mcr.microsoft.com/playright:v1.50.0-jammy'
+                    reuseNode trueargs '-u 0 --network=host'
+                }
+            }
+            steps{
+                dir('tests-api'){
+                    sh 'npx wait-port http://localhost:8080/api/health -t 30000'
+
+                    sh 'npm ci'
+                    sh 'npx playwrght test'
+                }
+            }
+        }
     }
     post {
         always {
