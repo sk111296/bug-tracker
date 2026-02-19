@@ -91,21 +91,21 @@ pipeline {
                     args "-v /var/run/docker.sock:/var/run/docker.sock -u 0 --entrypoint=''"
                 }
             }
-            steps {
-                sh '''
-                    echo "Stopping old bug-tracker containers..."
-                    docker stop bug-tracker-backend-1 || true
-                    docker stop bug-tracker-frontend-1 || true
-                    docker rm bug-tracker-backend-1 || true
-                    docker rm bug-tracker-frontend-1 || true
+            // steps {
+            //     sh '''
+            //         echo "Stopping old bug-tracker containers..."
+            //         docker stop bug-tracker-backend-1 || true
+            //         docker stop bug-tracker-frontend-1 || true
+            //         docker rm bug-tracker-backend-1 || true
+            //         docker rm bug-tracker-frontend-1 || true
 
-                    echo "Stopping workspace containers..."
-                    docker compose down || true
+            //         echo "Stopping workspace containers..."
+            //         docker compose down || true
 
-                    echo "Starting fresh containers..."
-                    docker compose up --build -d
-                '''
-            }
+            //         echo "Starting fresh containers..."
+            //         docker compose up --build -d
+            //     '''
+            // }
         }
         stage("API Tests"){
             agent {
