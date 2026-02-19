@@ -93,7 +93,13 @@ pipeline {
             }
             steps {
                 sh '''
-                    echo "Stopping any existing containers..."
+                    echo "Stopping old bug-tracker containers..."
+                    docker stop bug-tracker-backend-1 || true
+                    docker stop bug-tracker-frontend-1 || true
+                    docker rm bug-tracker-backend-1 || true
+                    docker rm bug-tracker-frontend-1 || true
+
+                    echo "Stopping workspace containers..."
                     docker compose down || true
 
                     echo "Starting fresh containers..."
