@@ -60,12 +60,15 @@ pipeline {
                     steps {
                         dir('bugtracker-frontend') {
                             sh '''
+                                echo "Running frontend tests..."
+                                mkdir -p test-results reports/coverage
+
                                 npm ci
                                 npm test
-                                rm -rf reports/coverage
-                                sh 'mkdir -p test-results reports'
-                                mv coverage reports/
 
+                                rm -rf reports/coverage
+                                mkdir -p reports/coverage
+                                mv coverage reports/
                             '''
                         }
                     }
