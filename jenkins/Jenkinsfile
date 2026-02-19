@@ -152,7 +152,7 @@ pipeline {
             post {
                 always {
                     junit 'tests-e2e/test-result/results.xml'
-                    publishHTML targget: [
+                    publishHTML target: [
                         reportDir: 'tests-e2e/playwright-report',
                         reportFiles: 'index.html',
                         reportName: 'Playwright E2E Test Report'
