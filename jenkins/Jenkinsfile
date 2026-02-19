@@ -92,7 +92,13 @@ pipeline {
                 }
             }
             steps {
-                sh 'docker compose up --build -d'
+                sh '''
+                    echo "Stopping any existing containers..."
+                    docker compose down || true
+
+                    echo "Starting fresh containers..."
+                    docker compose up --build -d
+                '''
             }
         }
         stage("API Tests"){
