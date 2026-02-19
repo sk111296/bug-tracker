@@ -125,8 +125,8 @@ pipeline {
             }
             post {
                 always {
-                    junit 'tests-api/test-results/results.xml'
-                    publishHTML target:[
+                    junit allowEmptyResults: true, testResults: 'tests-api/test-results/results.xml'
+                    publishHTML target: [
                         reportDir: 'tests-api/playwright-report',
                         reportFiles: 'index.html',
                         reportName: 'Playwright API Test Report'
@@ -151,7 +151,7 @@ pipeline {
             }
             post {
                 always {
-                    junit 'tests-e2e/test-result/results.xml'
+                    junit allowEmptyResults: true, testResults: 'tests-e2e/test-results/results.xml'
                     publishHTML target: [
                         reportDir: 'tests-e2e/playwright-report',
                         reportFiles: 'index.html',
