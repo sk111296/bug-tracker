@@ -25,7 +25,7 @@ pipeline {
                         dir('bugtracker-backend') {
                             sh '''
                                 echo "Running tests in container..."
-                                mkdir -p .gocache .gopath
+                                sh 'mkdir -p test-results .gocache .gopath'
                                 go env
                                 go test -v ./... | go-junit-report > test-results.xml
                                 cat test-results.xml
@@ -41,7 +41,7 @@ pipeline {
                     }
                     post {
                         always {
-                            junit 'bugtracker-backend/test-results.xml'
+                            junit 'bugtracker-backend/test-results/test-results.xml'
                             publishHTML(target: [
                                 reportDir: 'bugtracker-backend/reports',
                                 reportFiles: 'coverage.html',
@@ -63,7 +63,7 @@ pipeline {
                                 npm ci
                                 npm test
                                 rm -rf reports/coverage
-                                mkdir -p reports
+                                sh 'mkdir -p test-results reports'
                                 mv coverage reports/
 
                             '''
@@ -71,7 +71,7 @@ pipeline {
                     }
                     post {
                         always {
-                            junit 'bugtracker-frontend/test-results.xml'
+                            junit allowEmptyResults: true, testResults: 'bugtracker-frontend/test-results/test-results.xml'
                             publishHTML target: [
                                 reportDir: 'bugtracker-frontend/reports/coverage',
                                 reportFiles: 'index.html',
@@ -117,6 +117,8 @@ pipeline {
             }
             steps{
                 dir('tests-api') {
+                    sh 'mkdir -p test-results playwright-report'
+
                     sh 'npx wait-port http://localhost:8080/api/health -t 30000'
 
                     sh 'npm ci'
@@ -145,6 +147,7 @@ pipeline {
             }
             steps {
                 dir('tests-e2e') {
+                    sh 'mkdir -p test-results playwright-report'
                     sh 'npm ci'
                     sh 'npx playwright test'
                 }
