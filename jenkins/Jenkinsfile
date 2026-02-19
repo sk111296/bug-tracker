@@ -23,12 +23,12 @@ pipeline {
                     }
                     steps {
                         dir('bugtracker-backend') {
+                            sh 'mkdir -p test-results .gocache .gopath'
                             sh '''
                                 echo "Running tests in container..."
-                                sh 'mkdir -p test-results .gocache .gopath'
                                 go env
-                                go test -v ./... | go-junit-report > test-results.xml
-                                cat test-results.xml
+                                go test -v ./... | go-junit-report > test-results/test-results.xml
+                                cat test-results/test-results.xml
 
                                 # Generate coverage report
                                 go test -coverprofile=coverage.out -covermode=atomic ./...
