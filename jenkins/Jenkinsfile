@@ -1,15 +1,16 @@
 pipeline {
     agent any
     stages {
+
         stage('Execute Unit Tests') {
             parallel {
+
                 stage('Test Docker Connection') {
                     steps {
-                        sh '''
-                            docker ps
-                        '''
+                        sh 'docker ps'
                     }
                 }
+
                 stage('Unit Tests - Backend') {
                     agent {
                         docker {
@@ -23,19 +24,17 @@ pipeline {
                     }
                     steps {
                         dir('bugtracker-backend') {
-                            sh 'mkdir -p test-results .gocache .gopath'
                             sh '''
-                                echo "Running tests in container..."
-                                go env
+                                echo "Running backend tests..."
+                                mkdir -p .gocache .gopath test-results reports
+
+                                # Run Go tests and output JUnit XML
                                 go test -v ./... | go-junit-report > test-results/test-results.xml
                                 cat test-results/test-results.xml
 
                                 # Generate coverage report
                                 go test -coverprofile=coverage.out -covermode=atomic ./...
-                                go tool cover -html=coverage.out -o coverage.html
-
-                                mkdir -p reports
-                                mv coverage.html reports/
+                                go tool cover -html=coverage.out -o reports/coverage.html
                             '''
                         }
                     }
@@ -50,6 +49,7 @@ pipeline {
                         }
                     }
                 }
+
                 stage('Unit Tests - Frontend') {
                     agent {
                         docker {
@@ -61,20 +61,14 @@ pipeline {
                         dir('bugtracker-frontend') {
                             sh '''
                                 echo "Running frontend tests..."
-                                mkdir -p test-results reports/coverage
-
                                 npm ci
                                 npm test
-
-                                rm -rf reports/coverage
-                                mkdir -p reports/coverage
-                                mv coverage reports/
                             '''
                         }
                     }
                     post {
                         always {
-                            junit allowEmptyResults: true, testResults: 'bugtracker-frontend/test-results/test-results.xml'
+                            junit 'bugtracker-frontend/test-results/test-results.xml'
                             publishHTML target: [
                                 reportDir: 'bugtracker-frontend/reports/coverage',
                                 reportFiles: 'index.html',
@@ -86,7 +80,8 @@ pipeline {
 
             }
         }
-        stage("Launch Applicaton"){
+
+        stage("Launch Application") {
             agent {
                 docker {
                     image "docker:27.5.1"
@@ -96,7 +91,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    echo "Stopping old bug-tracker containers..."
+                    echo "Stopping old containers..."
                     docker stop workspace-backend-1 || true
                     docker stop workspace-frontend-1 || true
                     docker rm workspace-backend-1 || true
@@ -110,7 +105,8 @@ pipeline {
                 '''
             }
         }
-        stage("API Tests"){
+
+        stage("API Tests") {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.50.0-jammy'
@@ -118,14 +114,12 @@ pipeline {
                     args '-u 0 --network=host'
                 }
             }
-            steps{
+            steps {
                 dir('tests-api') {
-                    sh 'mkdir -p test-results playwright-report'
-
-                    sh 'npx wait-port http://localhost:8080/api/health -t 30000'
-
-                    sh 'npm ci'
-                    sh 'npx playwright test'
+                    sh '''
+                        npm ci
+                        npx playwright test
+                    '''
                 }
             }
             post {
@@ -139,20 +133,21 @@ pipeline {
                 }
             }
         }
+
         stage('E2E Tests') {
-            agent{
-                docker{
+            agent {
+                docker {
                     image 'mcr.microsoft.com/playwright:v1.50.0-jammy'
                     reuseNode true
                     args '-u 0 --network=host'
-
                 }
             }
             steps {
                 dir('tests-e2e') {
-                    sh 'mkdir -p test-results playwright-report'
-                    sh 'npm ci'
-                    sh 'npx playwright test'
+                    sh '''
+                        npm ci
+                        npx playwright test
+                    '''
                 }
             }
             post {
@@ -163,9 +158,9 @@ pipeline {
                         reportFiles: 'index.html',
                         reportName: 'Playwright E2E Test Report'
                     ]
-                    }
                 }
             }
         }
-    }
 
+    }
+}
