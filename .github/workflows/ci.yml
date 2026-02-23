@@ -1,6 +1,6 @@
 name: CI
 
-one:
+on:
   push:
     branches:
         - main
