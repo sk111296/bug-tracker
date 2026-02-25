@@ -27,7 +27,7 @@ jobs:
         run: |
 
           set -o pipefail
-          
+
           go test -v -coverprofile=coverage.out -covermode=atomic ./... 2>&1 | tee test-output.txt | go-junit-report > test-results.xml
 
           go tool cover -func=coverage.out > coverage.txt
@@ -35,7 +35,7 @@ jobs:
           echo "## Go Test Coverage Report" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           cat coverage.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Publish backend test results
         uses: dorny/test-reporter@v1
@@ -63,7 +63,12 @@ jobs:
         working-directory: ./bugtracker-frontend
         run: |
           npm ci
-          npm test
+          npm test | tee full_output.txt
+
+          echo "## Frontend Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat full_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Publish Frontend Test Results
         uses: dorny/test-reporter@v1
