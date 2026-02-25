@@ -30,7 +30,6 @@ jobs:
         id: test-backend
         working-directory: ./bugtracker-backend
         run: |
-
           set -o pipefail
 
           go test -v -coverprofile=coverage.out -covermode=atomic ./... 2>&1 | tee test-output.txt | go-junit-report > test-results.xml
@@ -45,7 +44,6 @@ jobs:
           echo "report<<EOF" >> $GITHUB_OUTPUT
           cat coverage.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
-          
 
       - name: Publish backend test results
         uses: dorny/test-reporter@v1
@@ -57,7 +55,6 @@ jobs:
 
   unit-tests-frontend:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -89,8 +86,8 @@ jobs:
 
   create-coverage-comment:
     if: github.event_name == 'pull_request'
-    needs: [unit-test-backend]
-    runs-out: ubuntu-latest
+    needs: [unit-tests-backend]
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: write
     steps:
@@ -103,6 +100,3 @@ jobs:
             ```
             ${{ needs.unit-tests-backend.outputs.coverage }}
             ```
-
-
-
