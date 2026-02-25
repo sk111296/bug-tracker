@@ -137,8 +137,8 @@ jobs:
           npm ci
           npx playwright test
 
-      - name: Shut Down Appliation 
-        run: docker compose Down
+      - name: Shut Down Application
+        run: docker compose down
 
       - name: Upload API Test Results
         if: always()
