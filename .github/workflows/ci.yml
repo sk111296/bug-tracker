@@ -124,10 +124,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: action/checkout@v4
+        uses: actions/checkout@v4
 
       - name: Launch Application
-        run: 
+        run: |
           docker compose up --build -d 
           npx wait-port http://localhost:8080/api/health -t 3000
-          
