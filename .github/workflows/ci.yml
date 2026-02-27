@@ -198,15 +198,13 @@ jobs:
           path: summary.json
           retention-days: 30
 
-      - name: Upload Performance HTNL Report
+      - name: Upload Performance HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: performance-report
           path: perf-results.html
           retention-days: 30
-
-
 
       - name: Publish API Test Results
         uses: dorny/test-reporter@v1
