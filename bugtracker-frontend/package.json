@@ -38,7 +38,7 @@
     "typescript": "^5"
   },
   "jest-junit": {
-    "outputDirectory": "test-results",
+    "outputDirectory": ".",
     "outputName": "test-results.xml",
     "ancestorSeparator": " › ",
     "uniqueOutputName": "false",
