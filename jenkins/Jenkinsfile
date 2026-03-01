@@ -224,7 +224,7 @@ pipeline {
                 stage('Deploy Backend') {
                     steps {
                         dir('bugtracker-backend') {
-                            sh 'flyctl deploy -c fly.staging.toml --remote-only'
+                            sh 'flyctl deploy -a bugtracker-backend-staging -c fly.staging.toml --remote-only'
                         }
                     }
                 }
@@ -232,13 +232,12 @@ pipeline {
                 stage('Deploy Frontend') {
                     steps {
                         dir('bugtracker-frontend') {
-                            sh 'flyctl deploy -c fly.staging.toml --remote-only'
+                            sh 'flyctl deploy -a bugtracker-frontend-staging -c fly.staging.toml --remote-only'     
                         }
                     }
+
                 }
-
-            }
+             }
         }
-
     }
 }
