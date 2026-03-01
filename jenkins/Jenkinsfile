@@ -190,6 +190,41 @@ pipeline {
                 }
             }
 
+            stage('Deploy Staging') {
+                when {
+                    expression {
+                        return env.GIT_BRANCH == 'origin/main'
+                    }
+                }
+                environment {
+                    FLY_API_TOKEN = credentials('FLY_API_TOKEN')
+                    FLYCTL_INSTALL = "${env.WORKSPACE.replaceALL(' ','')}/.fly"
+                    PATH = "$FLYCTL_INSTALL/bin:$PATH"
+                    HOME = "${WORKSPACE}"
+                }
+                stage('Install Flyctl') {
+                    steps{
+                        sh 'mkdir -p $FLYCTL_INSTALL'
+                        sh 'curl -L https://fly.io/install.sh | sh'
+                        sh 'flyctl version'
+                    }                  
+                }
+                stage ('Deploy Backend') {
+                    steps {
+                        dir('bugtracker-backend') {
+                            sh 'flyctl dedploy -c fly.staging.toml --remote-only'
+                        }
+                    }
+                }
+                stage ('Deploy Frontend') {
+                    steps {
+                        dir('bugtracker-frontend') {
+                            sh 'flyctl dedploy -c fly.staging.toml --remote-only'
+                        }
+                    }
+                }
+            }
+
         }
 
     }
