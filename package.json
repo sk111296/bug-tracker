@@ -1,0 +1,22 @@
+{
+  "name": "bugtracker-frontend",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "react-scripts test"
+  },
+  "devDependencies": {
+    "jest-junit": "^16.0.0"
+  },
+  "jest": {
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "test-results",
+          "outputName": "test-results.xml"
+        }
+      ]
+    ]
+  }
+}
